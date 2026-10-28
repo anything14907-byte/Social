@@ -194,3 +194,4 @@ All static and dynamic routes are optimized and pre-rendered.
 2. **Buy with Razorpay (₹):** Browse the home feed or profile storefront tab, click **"Buy Now ₹3,499"** on the Banarasi Silk Saree or any product, choose UPI (GPay/PhonePe), and click **"Pay ₹3,499 Securely"**.
 3. **Boost Post to Indian Pincodes:** Click the **"Boost Post"** button on any post, pick an Indian city (e.g. Mumbai, Bengaluru, Delhi) or enter a 6-digit PIN, select a budget tier (₹199 / ₹499 / ₹999), and click launch boost.
 4. **Get Blue Checkmark:** Open the sidebar "More" menu, select **"Apply for Blue Verified Badge"**, pick Aadhaar/PAN verification, and click submit to activate the verified checkmark.
+

@@ -62,3 +62,4 @@ const UserSchema = new Schema(
 UserSchema.index({ city: 1, pincode: 1 });
 export const UserModel = mongoose.models.User || mongoose.model('User', UserSchema);
 */
+

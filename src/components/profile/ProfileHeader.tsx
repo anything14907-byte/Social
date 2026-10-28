@@ -158,3 +158,4 @@ export default function ProfileHeader({ profile, isCurrentUser }: ProfileHeaderP
     </header>
   );
 }
+

@@ -120,3 +120,4 @@ export interface Transaction {
   paymentMethod: 'UPI' | 'CARD' | 'NETBANKING' | 'WALLET';
   createdAt: string;
 }
+

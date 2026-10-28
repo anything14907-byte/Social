@@ -83,3 +83,4 @@ export interface IVerificationRequest {
   feePaidInr: number; // ₹499 verification fee (Meta verified model for India)
   createdAt: Date;
 }
+

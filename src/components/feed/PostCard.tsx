@@ -448,3 +448,4 @@ export default function PostCard({ post }: PostCardProps) {
     </article>
   );
 }
+

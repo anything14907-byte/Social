@@ -47,3 +47,4 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: err.message || 'Failed to create post' }, { status: 500 });
   }
 }
+

@@ -31,3 +31,4 @@ export async function POST(
     return NextResponse.json({ error: err.message || 'Failed to boost post' }, { status: 500 });
   }
 }
+

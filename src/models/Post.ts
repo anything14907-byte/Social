@@ -95,3 +95,4 @@ PostSchema.index({ createdAt: -1 });
 PostSchema.index({ city: 1, createdAt: -1 });
 export const PostModel = mongoose.models.Post || mongoose.model('Post', PostSchema);
 */
+

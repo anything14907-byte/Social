@@ -378,3 +378,4 @@ export default function ReelItem({ reel, isActive }: ReelItemProps) {
     </div>
   );
 }
+
