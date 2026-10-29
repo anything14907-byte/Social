@@ -1,11 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { UserProfile } from '@/types';
 import { useAuth } from '@/context/AuthContext';
-import { useFeed } from '@/context/FeedContext';
-import { ShieldCheck, Share2, Settings, ShoppingBag, Sparkles, MapPin } from 'lucide-react';
-import { formatCount } from '@/lib/utils';
+import { ShieldCheck, Share2, Star, MapPin, Store, MessageCircle, Phone } from 'lucide-react';
 import { useToast } from '@/context/ToastContext';
 
 interface ProfileHeaderProps {
@@ -15,142 +13,113 @@ interface ProfileHeaderProps {
 
 export default function ProfileHeader({ profile, isCurrentUser }: ProfileHeaderProps) {
   const { openSetupWizard } = useAuth();
-  const { openVerificationModal, openCreateModal } = useFeed();
   const { toast } = useToast();
-  const [isFollowing, setIsFollowing] = useState(false);
 
   const handleShare = () => {
     navigator.clipboard?.writeText(window.location.href);
-    toast('Profile link copied to clipboard! Share on WhatsApp 🇮🇳', 'success');
+    toast('Artisan Storefront link copied to clipboard! Share on WhatsApp 📲', 'success');
+  };
+
+  const openWhatsApp = () => {
+    window.open(`https://wa.me/919829012345?text=Namaste!%20I%20found%20your%20storefront%20on%20VyaparVibe`, '_blank');
   };
 
   return (
-    <header className="flex flex-col gap-6 pb-6 border-b border-neutral-200 dark:border-neutral-800 select-none">
-      <div className="flex items-start gap-6 sm:gap-10">
-        {/* Profile Picture with Indian Gradient Ring */}
-        <div className="relative group">
-          <div className="w-20 h-20 sm:w-36 sm:h-36 rounded-full p-1 bg-gradient-to-tr from-amber-500 via-rose-500 to-indigo-600 shadow-md">
-            <div className="w-full h-full rounded-full border-2 border-white dark:border-black overflow-hidden bg-neutral-200 dark:bg-neutral-800">
-              <img
-                src={profile.avatar}
-                alt={profile.username}
-                className="w-full h-full object-cover"
-              />
-            </div>
+    <header className="flex flex-col gap-5 pb-6 border-b border-light-border dark:border-dark-border select-none">
+      <div className="flex flex-col sm:flex-row items-start gap-5 sm:gap-8">
+        {/* Artisan Avatar */}
+        <div className="relative shrink-0">
+          <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-3xl overflow-hidden border-2 border-vyapar-600/50 shadow-md">
+            <img src={profile.avatar} alt={profile.fullName} className="w-full h-full object-cover" />
           </div>
+          {profile.isVerifiedArtisan && (
+            <div
+              title="Verified Indian Artisan"
+              className="absolute -bottom-2 -right-2 p-1.5 rounded-xl bg-vyapar-700 text-white shadow-md border-2 border-white dark:border-dark-card"
+            >
+              <ShieldCheck className="w-4 h-4 fill-white" />
+            </div>
+          )}
         </div>
 
-        {/* User Details & Action Buttons */}
-        <div className="flex-1 flex flex-col gap-4">
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-xl sm:text-2xl font-black text-neutral-900 dark:text-white flex items-center gap-1.5">
-              <span>{profile.username}</span>
-              {profile.isVerified ? (
-                <span title="BharatGram Verified Creator">
-                  <ShieldCheck className="w-5 h-5 text-brand-blue fill-brand-blue inline" />
-                </span>
-              ) : (
-                isCurrentUser && (
-                  <button
-                    onClick={openVerificationModal}
-                    className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-brand-blue border border-blue-500/20 hover:bg-blue-500/20 transition-colors"
-                  >
-                    + Get Verified
-                  </button>
-                )
-              )}
-            </h1>
+        {/* Business & Artisan Info */}
+        <div className="flex-1 flex flex-col gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h1 className="text-xl sm:text-2xl font-black text-neutral-900 dark:text-white flex items-center gap-2">
+                <span>{profile.businessName || profile.fullName}</span>
+              </h1>
+              <span className="text-xs text-neutral-500 font-medium">
+                Proprietor: {profile.fullName} • {profile.accountType === 'LOCAL_SELLER_ARTISAN' ? 'Master Artisan Seller' : 'Creative Creator'}
+              </span>
+            </div>
 
-            {isCurrentUser ? (
-              <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
+              {isCurrentUser ? (
                 <button
                   onClick={openSetupWizard}
-                  className="px-4 py-1.5 rounded-xl bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-xs font-bold text-neutral-900 dark:text-white transition-colors"
+                  className="px-4 py-2 rounded-xl bg-neutral-100 dark:bg-dark-hover hover:bg-neutral-200 dark:hover:bg-neutral-800 text-xs font-bold text-neutral-900 dark:text-white transition-colors"
                 >
-                  Edit Profile
+                  Edit Store Profile
                 </button>
+              ) : (
                 <button
-                  onClick={handleShare}
-                  aria-label="Share Profile"
-                  className="p-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white transition-colors"
+                  onClick={openWhatsApp}
+                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm active:scale-95 transition-all"
                 >
-                  <Share2 className="w-4 h-4" />
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  <span>WhatsApp Shop</span>
                 </button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setIsFollowing(!isFollowing)}
-                  className={`px-5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                    isFollowing
-                      ? 'bg-neutral-200 dark:bg-neutral-800 text-neutral-800 dark:text-white'
-                      : 'bg-rose-600 text-white hover:bg-rose-700 shadow-sm'
-                  }`}
-                >
-                  {isFollowing ? 'Following' : 'Follow'}
-                </button>
-                <button
-                  onClick={handleShare}
-                  className="p-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white"
-                >
-                  <Share2 className="w-4 h-4" />
-                </button>
-              </div>
-            )}
-          </div>
+              )}
 
-          {/* Stats Bar */}
-          <div className="flex items-center gap-6 text-sm text-neutral-800 dark:text-neutral-200">
-            <div>
-              <strong className="font-extrabold text-black dark:text-white">
-                {profile.postsCount}
-              </strong>{' '}
-              <span className="text-neutral-500">posts</span>
-            </div>
-            <div>
-              <strong className="font-extrabold text-black dark:text-white">
-                {formatCount(profile.followersCount + (isFollowing ? 1 : 0))}
-              </strong>{' '}
-              <span className="text-neutral-500">followers</span>
-            </div>
-            <div>
-              <strong className="font-extrabold text-black dark:text-white">
-                {profile.followingCount}
-              </strong>{' '}
-              <span className="text-neutral-500">following</span>
-            </div>
-          </div>
-
-          {/* Bio & Details */}
-          <div className="flex flex-col gap-1 text-xs sm:text-sm">
-            <span className="font-bold text-neutral-900 dark:text-white">
-              {profile.fullName}
-            </span>
-            {profile.category && (
-              <span className="text-xs text-neutral-400 font-medium">
-                {profile.category}
-              </span>
-            )}
-            <p className="whitespace-pre-line text-neutral-700 dark:text-neutral-300 leading-relaxed mt-0.5">
-              {profile.bio}
-            </p>
-
-            {profile.location && (
-              <span className="text-xs text-neutral-500 flex items-center gap-1 mt-1">
-                <MapPin className="w-3.5 h-3.5 text-rose-500" />
-                <span>{profile.location} {profile.pincode ? `(${profile.pincode})` : ''}</span>
-              </span>
-            )}
-
-            {profile.website && (
-              <a
-                href={profile.website}
-                target="_blank"
-                rel="noreferrer"
-                className="text-xs font-semibold text-brand-blue hover:underline mt-1"
+              <button
+                onClick={handleShare}
+                aria-label="Share Storefront"
+                className="p-2 rounded-xl bg-neutral-100 dark:bg-dark-hover hover:bg-neutral-200 text-neutral-700 dark:text-neutral-300"
               >
-                {profile.website.replace('https://', '')}
-              </a>
+                <Share2 className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Rating, Reviews, Sales Stats */}
+          <div className="flex flex-wrap items-center gap-5 text-xs text-neutral-700 dark:text-neutral-300">
+            <div className="flex items-center gap-1 font-bold text-amber-600 dark:text-amber-400">
+              <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
+              <span>{profile.rating || 4.9}</span>
+              <span className="text-neutral-400 font-normal">({profile.reviewsCount || 142} verified reviews)</span>
+            </div>
+
+            <div className="h-3 w-px bg-neutral-300 dark:bg-dark-border" />
+
+            <div>
+              <strong className="font-extrabold text-neutral-900 dark:text-white">{profile.salesCount || 384}</strong>{' '}
+              <span className="text-neutral-500">Orders Fulfilled</span>
+            </div>
+
+            <div className="h-3 w-px bg-neutral-300 dark:bg-dark-border" />
+
+            <div>
+              <strong className="font-extrabold text-neutral-900 dark:text-white">{profile.postsCount || 28}</strong>{' '}
+              <span className="text-neutral-500">Craft Posts</span>
+            </div>
+          </div>
+
+          {/* Bio & Workshop Location */}
+          <p className="whitespace-pre-line text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
+            {profile.bio}
+          </p>
+
+          <div className="flex flex-wrap items-center gap-4 text-xs text-neutral-500 pt-1">
+            <span className="flex items-center gap-1 text-terracotta-700 dark:text-terracotta-400 font-medium">
+              <MapPin className="w-3.5 h-3.5" />
+              <span>Workshop: {profile.location} (PIN {profile.pincode})</span>
+            </span>
+
+            {profile.gstin && (
+              <span className="font-mono text-[11px] bg-neutral-100 dark:bg-dark-hover px-2 py-0.5 rounded text-neutral-600 dark:text-neutral-400">
+                GSTIN: {profile.gstin}
+              </span>
             )}
           </div>
         </div>
@@ -158,4 +127,3 @@ export default function ProfileHeader({ profile, isCurrentUser }: ProfileHeaderP
     </header>
   );
 }
-

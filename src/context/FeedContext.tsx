@@ -1,103 +1,60 @@
 'use client';
 
 import React, { createContext, useContext, useState } from 'react';
-import { Post, Reel, Story, ProductDetails, Comment } from '@/types';
-import { SEED_POSTS, SEED_REELS, SEED_STORIES, CURRENT_USER } from '@/data/seedData';
+import { PostListing, ShowcaseVideo, OrderInquiry, Comment } from '@/types';
+import { SEED_POSTS, SEED_SHOWCASE_VIDEOS, CURRENT_USER } from '@/data/seedData';
 import { useToast } from './ToastContext';
 
 interface FeedContextType {
-  posts: Post[];
-  stories: Story[];
-  reels: Reel[];
-  activeStoryIndex: number | null;
-  openStoryViewer: (index: number) => void;
-  closeStoryViewer: () => void;
-  nextStory: () => void;
-  prevStory: () => void;
+  posts: PostListing[];
+  showcases: ShowcaseVideo[];
+  selectedCategory: string;
+  setSelectedCategory: (category: string) => void;
+  selectedPincode: string;
+  setSelectedPincode: (pincode: string) => void;
   isCreateModalOpen: boolean;
   openCreateModal: () => void;
   closeCreateModal: () => void;
-  selectedProductForCheckout: { product: ProductDetails; postAuthor: string } | null;
-  openCheckout: (product: ProductDetails, postAuthor: string) => void;
-  closeCheckout: () => void;
-  selectedPostForBoost: Post | null;
-  openBoostModal: (post: Post) => void;
-  closeBoostModal: () => void;
-  isVerificationModalOpen: boolean;
-  openVerificationModal: () => void;
-  closeVerificationModal: () => void;
+  selectedListingForInquiry: PostListing | null;
+  openInquiryModal: (listing: PostListing) => void;
+  closeInquiryModal: () => void;
   toggleLikePost: (postId: string) => void;
   toggleSavePost: (postId: string) => void;
   addComment: (postId: string, text: string) => void;
-  createPost: (postData: Partial<Post>) => void;
-  applyBoostToPost: (postId: string, targetCity: string, pincode: string, budget: number) => void;
-  toggleLikeReel: (reelId: string) => void;
-  toggleSaveReel: (reelId: string) => void;
+  createListing: (data: Partial<PostListing>) => void;
+  submitOrderInquiry: (inquiryData: Partial<OrderInquiry>) => void;
+  toggleLikeShowcase: (showcaseId: string) => void;
+  toggleSaveShowcase: (showcaseId: string) => void;
 }
 
 const FeedContext = createContext<FeedContextType | undefined>(undefined);
 
 export function FeedProvider({ children }: { children: React.ReactNode }) {
-  const [posts, setPosts] = useState<Post[]>(SEED_POSTS);
-  const [stories, setStories] = useState<Story[]>(SEED_STORIES);
-  const [reels, setReels] = useState<Reel[]>(SEED_REELS);
-
-  const [activeStoryIndex, setActiveStoryIndex] = useState<number | null>(null);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [selectedProductForCheckout, setSelectedProductForCheckout] = useState<{
-    product: ProductDetails;
-    postAuthor: string;
-  } | null>(null);
-  const [selectedPostForBoost, setSelectedPostForBoost] = useState<Post | null>(null);
-  const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
+  const [posts, setPosts] = useState<PostListing[]>(SEED_POSTS);
+  const [showcases, setShowcases] = useState<ShowcaseVideo[]>(SEED_SHOWCASE_VIDEOS);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedPincode, setSelectedPincode] = useState<string>('');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
+  const [selectedListingForInquiry, setSelectedListingForInquiry] = useState<PostListing | null>(null);
 
   const { toast } = useToast();
-
-  const openStoryViewer = (index: number) => {
-    setActiveStoryIndex(index);
-    // Mark story as seen
-    setStories((prev) =>
-      prev.map((s, i) => (i === index ? { ...s, hasSeen: true } : s))
-    );
-  };
-
-  const closeStoryViewer = () => setActiveStoryIndex(null);
-
-  const nextStory = () => {
-    if (activeStoryIndex !== null && activeStoryIndex < stories.length - 1) {
-      setActiveStoryIndex(activeStoryIndex + 1);
-    } else {
-      closeStoryViewer();
-    }
-  };
-
-  const prevStory = () => {
-    if (activeStoryIndex !== null && activeStoryIndex > 0) {
-      setActiveStoryIndex(activeStoryIndex - 1);
-    }
-  };
 
   const openCreateModal = () => setIsCreateModalOpen(true);
   const closeCreateModal = () => setIsCreateModalOpen(false);
 
-  const openCheckout = (product: ProductDetails, postAuthor: string) => {
-    setSelectedProductForCheckout({ product, postAuthor });
-  };
-  const closeCheckout = () => setSelectedProductForCheckout(null);
-
-  const openBoostModal = (post: Post) => setSelectedPostForBoost(post);
-  const closeBoostModal = () => setSelectedPostForBoost(null);
-
-  const openVerificationModal = () => setIsVerificationModalOpen(true);
-  const closeVerificationModal = () => setIsVerificationModalOpen(false);
+  const openInquiryModal = (listing: PostListing) => setSelectedListingForInquiry(listing);
+  const closeInquiryModal = () => setSelectedListingForInquiry(null);
 
   const toggleLikePost = (postId: string) => {
     setPosts((prev) =>
       prev.map((p) => {
         if (p.id === postId) {
           const isLiked = !p.isLiked;
-          const count = isLiked ? p.likesCount + 1 : p.likesCount - 1;
-          return { ...p, isLiked, likesCount: count };
+          return {
+            ...p,
+            isLiked,
+            likesCount: isLiked ? p.likesCount + 1 : p.likesCount - 1,
+          };
         }
         return p;
       })
@@ -109,7 +66,7 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
       prev.map((p) => {
         if (p.id === postId) {
           const isSaved = !p.isSaved;
-          toast(isSaved ? 'Post saved to your collection' : 'Post removed from saved', 'info');
+          toast(isSaved ? 'Item saved to your craft collection' : 'Removed from collection', 'info');
           return { ...p, isSaved };
         }
         return p;
@@ -131,7 +88,6 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
       },
       text: text.trim(),
       createdAt: 'Just now',
-      likesCount: 0,
     };
 
     setPosts((prev) =>
@@ -146,92 +102,92 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
         return p;
       })
     );
-    toast('Comment posted!', 'success');
+    toast('Comment submitted directly to creator!', 'success');
   };
 
-  const createPost = (postData: Partial<Post>) => {
-    const newPost: Post = {
-      id: `post_${Date.now()}`,
+  const createListing = (data: Partial<PostListing>) => {
+    const newPost: PostListing = {
+      id: `post_vv_${Date.now()}`,
       author: {
         id: CURRENT_USER.id,
         username: CURRENT_USER.username,
         fullName: CURRENT_USER.fullName,
+        businessName: CURRENT_USER.businessName,
+        accountType: CURRENT_USER.accountType,
         avatar: CURRENT_USER.avatar,
-        isVerified: CURRENT_USER.isVerified,
-        location: postData.location || 'India',
+        isVerifiedArtisan: CURRENT_USER.isVerifiedArtisan,
+        location: `${data.location || CURRENT_USER.location}`,
+        state: data.state || CURRENT_USER.state || 'Rajasthan',
+        pincode: data.pincode || CURRENT_USER.pincode || '302001',
+        rating: 5.0,
+        reviewsCount: 1,
       },
-      mediaUrls: postData.mediaUrls && postData.mediaUrls.length > 0
-        ? postData.mediaUrls
-        : ['https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=1200&q=80'],
-      mediaType: postData.mediaType || 'image',
-      aspectRatio: postData.aspectRatio || '1:1',
-      caption: postData.caption || '',
-      location: postData.location || 'Mumbai, Maharashtra',
-      pincode: postData.pincode || '400001',
+      mediaUrls: data.mediaUrls && data.mediaUrls.length > 0
+        ? data.mediaUrls
+        : ['https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=1200&q=80'],
+      mediaType: data.mediaType || 'image',
+      caption: data.caption || '',
+      category: data.category || 'Handloom & Textiles',
+      location: data.location || CURRENT_USER.location || 'Jaipur',
+      state: data.state || 'Rajasthan',
+      pincode: data.pincode || '302001',
+      isForSale: data.isForSale || false,
+      product: data.product,
       likesCount: 0,
       commentsCount: 0,
-      sharesCount: 0,
+      inquiriesCount: 0,
       isLiked: false,
       isSaved: false,
       createdAt: 'Just now',
       comments: [],
-      isMonetized: postData.isMonetized || false,
-      product: postData.product,
     };
 
     setPosts([newPost, ...posts]);
     closeCreateModal();
-    toast('Your post has been shared across BharatGram!', 'success');
+    toast('New listing & craft showcase published across VyaparVibe!', 'success');
   };
 
-  const applyBoostToPost = (postId: string, targetCity: string, pincode: string, budget: number) => {
-    const reachEstimate = Math.round(budget * 25);
-    setPosts((prev) =>
-      prev.map((p) => {
-        if (p.id === postId) {
-          return {
-            ...p,
-            boost: {
-              isBoosted: true,
-              targetCity,
-              targetPincode: pincode,
-              budget,
-              reachEstimate,
-            },
-          };
-        }
-        return p;
-      })
-    );
-    closeBoostModal();
-    toast(`Post boosted successfully! Targeted to ${targetCity} (Est. reach: ${reachEstimate.toLocaleString()} users)`, 'success');
+  const submitOrderInquiry = (inquiryData: Partial<OrderInquiry>) => {
+    // Increase inquiry count on listing
+    if (inquiryData.listingId) {
+      setPosts((prev) =>
+        prev.map((p) => {
+          if (p.id === inquiryData.listingId) {
+            return { ...p, inquiriesCount: (p.inquiriesCount || 0) + 1 };
+          }
+          return p;
+        })
+      );
+    }
+    closeInquiryModal();
+    toast(`Inquiry sent to ${inquiryData.sellerName || 'creator'}! They will reach out via WhatsApp/Call.`, 'success');
   };
 
-  const toggleLikeReel = (reelId: string) => {
-    setReels((prev) =>
-      prev.map((r) => {
-        if (r.id === reelId) {
-          const isLiked = !r.isLiked;
+  const toggleLikeShowcase = (id: string) => {
+    setShowcases((prev) =>
+      prev.map((s) => {
+        if (s.id === id) {
+          const isLiked = !s.isLiked;
           return {
-            ...r,
+            ...s,
             isLiked,
-            likesCount: isLiked ? r.likesCount + 1 : r.likesCount - 1,
+            likesCount: isLiked ? s.likesCount + 1 : s.likesCount - 1,
           };
         }
-        return r;
+        return s;
       })
     );
   };
 
-  const toggleSaveReel = (reelId: string) => {
-    setReels((prev) =>
-      prev.map((r) => {
-        if (r.id === reelId) {
-          const isSaved = !r.isSaved;
-          toast(isSaved ? 'Reel saved' : 'Reel removed', 'info');
-          return { ...r, isSaved };
+  const toggleSaveShowcase = (id: string) => {
+    setShowcases((prev) =>
+      prev.map((s) => {
+        if (s.id === id) {
+          const isSaved = !s.isSaved;
+          toast(isSaved ? 'Video showcase saved' : 'Showcase removed', 'info');
+          return { ...s, isSaved };
         }
-        return r;
+        return s;
       })
     );
   };
@@ -240,32 +196,24 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
     <FeedContext.Provider
       value={{
         posts,
-        stories,
-        reels,
-        activeStoryIndex,
-        openStoryViewer,
-        closeStoryViewer,
-        nextStory,
-        prevStory,
+        showcases,
+        selectedCategory,
+        setSelectedCategory,
+        selectedPincode,
+        setSelectedPincode,
         isCreateModalOpen,
         openCreateModal,
         closeCreateModal,
-        selectedProductForCheckout,
-        openCheckout,
-        closeCheckout,
-        selectedPostForBoost,
-        openBoostModal,
-        closeBoostModal,
-        isVerificationModalOpen,
-        openVerificationModal,
-        closeVerificationModal,
+        selectedListingForInquiry,
+        openInquiryModal,
+        closeInquiryModal,
         toggleLikePost,
         toggleSavePost,
         addComment,
-        createPost,
-        applyBoostToPost,
-        toggleLikeReel,
-        toggleSaveReel,
+        createListing,
+        submitOrderInquiry,
+        toggleLikeShowcase,
+        toggleSaveShowcase,
       }}
     >
       {children}
@@ -280,4 +228,3 @@ export function useFeed() {
   }
   return context;
 }
-

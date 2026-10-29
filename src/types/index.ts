@@ -1,123 +1,126 @@
+export type AccountType = 'CREATIVE_CREATOR' | 'LOCAL_SELLER_ARTISAN';
 export type MediaType = 'image' | 'video' | 'carousel';
+export type CtaType = 'inquire_buy' | 'book_service' | 'whatsapp';
 
 export interface Author {
   id: string;
   username: string;
   fullName: string;
+  businessName?: string;
+  accountType: AccountType;
   avatar: string;
-  isVerified?: boolean;
+  isVerifiedArtisan?: boolean;
   location?: string;
+  state?: string;
+  pincode?: string;
   bio?: string;
+  rating?: number;
+  reviewsCount?: number;
+  upiId?: string;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  iconName: string;
+  slug: string;
+  description: string;
 }
 
 export interface ProductDetails {
   title: string;
   price: number;
+  pricingUnit?: string; // e.g. "per piece", "per meter", "per hour"
   currency: string; // 'INR'
-  checkoutUrl?: string;
-  ctaType: 'buy_now' | 'book_service' | 'order_whatsapp';
-  category?: string;
-  inStock?: boolean;
-}
-
-export interface BoostDetails {
-  isBoosted: boolean;
-  campaignId?: string;
-  targetCity?: string;
-  targetPincode?: string;
-  budget?: number;
-  reachEstimate?: number;
+  inStock: boolean;
+  stockQuantity?: number;
+  ctaType: CtaType;
+  category: string;
+  materialsUsed?: string;
+  leadTimeDays?: number;
 }
 
 export interface Comment {
   id: string;
   postId: string;
-  user: Author;
+  user: {
+    id: string;
+    username: string;
+    fullName: string;
+    avatar: string;
+  };
   text: string;
   createdAt: string;
-  likesCount: number;
-  isLiked?: boolean;
+  likesCount?: number;
 }
 
-export interface Post {
+export interface PostListing {
   id: string;
   author: Author;
   mediaUrls: string[];
   mediaType: MediaType;
   caption: string;
-  location?: string;
-  pincode?: string;
-  aspectRatio?: '1:1' | '4:5' | '16:9' | '9:16';
+  category: string;
+  location: string;
+  state: string;
+  pincode: string;
+  isForSale: boolean;
+  product?: ProductDetails;
   likesCount: number;
   commentsCount: number;
-  sharesCount?: number;
+  inquiriesCount?: number;
   isLiked?: boolean;
   isSaved?: boolean;
-  commentsDisabled?: boolean;
-  hideLikes?: boolean;
   createdAt: string;
   comments: Comment[];
-  isMonetized?: boolean;
-  product?: ProductDetails;
-  boost?: BoostDetails;
 }
 
-export interface Story {
-  id: string;
-  author: Author;
-  mediaUrl: string;
-  mediaType: 'image' | 'video';
-  duration?: number; // seconds
-  caption?: string;
-  createdAt: string;
-  expiresAt: string;
-  hasSeen?: boolean;
-}
-
-export interface Reel {
+export interface ShowcaseVideo {
   id: string;
   author: Author;
   videoUrl: string;
   thumbnailUrl: string;
-  caption: string;
-  audioTrack: {
-    title: string;
-    artist: string;
-    isOriginal?: boolean;
-  };
+  title: string;
+  description: string;
+  category: string;
+  productListingId?: string;
+  productPrice?: number;
   likesCount: number;
   commentsCount: number;
   sharesCount: number;
   isLiked?: boolean;
   isSaved?: boolean;
-  location?: string;
-  product?: ProductDetails;
-  comments: Comment[];
+  location: string;
+}
+
+export interface OrderInquiry {
+  id: string;
+  listingId: string;
+  listingTitle: string;
+  listingImage: string;
+  sellerId: string;
+  sellerName: string;
+  sellerPhone?: string;
+  buyerName: string;
+  buyerPhone: string;
+  buyerCity: string;
+  buyerPincode: string;
+  buyerAddress?: string;
+  inquiryType: 'PURCHASE' | 'CUSTOM_ORDER' | 'SERVICE_BOOKING';
+  amount: number;
+  message?: string;
+  status: 'NEW' | 'CONTACTED' | 'FULFILLED';
+  createdAt: string;
 }
 
 export interface UserProfile extends Author {
   email: string;
-  phone?: string;
-  isPhoneVerified?: boolean;
+  phone: string;
+  isPhoneVerified: boolean;
   postsCount: number;
-  followersCount: number;
-  followingCount: number;
-  website?: string;
-  pincode?: string;
-  category?: string;
+  listingsCount: number;
+  salesCount: number;
+  gstin?: string;
   joinedDate: string;
+  website?: string;
 }
-
-export interface Transaction {
-  id: string;
-  orderId: string;
-  paymentId: string;
-  amount: number;
-  currency: string;
-  status: 'SUCCESS' | 'PENDING' | 'FAILED';
-  type: 'PRODUCT_PURCHASE' | 'POST_BOOST' | 'VERIFICATION_BADGE';
-  description: string;
-  paymentMethod: 'UPI' | 'CARD' | 'NETBANKING' | 'WALLET';
-  createdAt: string;
-}
-

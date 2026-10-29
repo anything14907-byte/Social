@@ -1,5 +1,5 @@
 /**
- * BharatGram - Comment, Like, Story, Transaction, BoostCampaign & Verification Models
+ * VyaparVibe - Comment, OrderInquiry & Category Database Schemas
  */
 
 export interface IComment {
@@ -7,80 +7,33 @@ export interface IComment {
   postId: string;
   authorId: string;
   text: string;
-  likesCount: number;
   createdAt: Date;
 }
 
-export interface ILike {
+export interface IOrderInquiry {
   _id: string;
-  targetId: string; // postId or reelId or commentId
-  targetType: 'POST' | 'REEL' | 'COMMENT';
-  userId: string;
+  listingId: string;
+  sellerId: string;
+  buyerName: string;
+  buyerPhone: string; // +91 Indian phone
+  buyerCity: string;
+  buyerPincode: string;
+  buyerAddress?: string;
+  inquiryType: 'PURCHASE' | 'CUSTOM_ORDER' | 'SERVICE_BOOKING';
+  amount: number; // in INR (₹)
+  message?: string;
+  paymentMethod: 'UPI' | 'RAZORPAY' | 'COD' | 'WHATSAPP_DIRECT';
+  paymentStatus: 'PENDING' | 'PAID' | 'COD_CONFIRMED';
+  status: 'NEW' | 'CONTACTED' | 'DISPATCHED' | 'FULFILLED' | 'CANCELLED';
   createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface IStory {
+export interface ICategory {
   _id: string;
-  authorId: string;
-  mediaUrl: string;
-  mediaType: 'image' | 'video';
-  caption?: string;
-  seenBy: string[]; // userIds
-  expiresAt: Date; // TTL 24 Hours
-  createdAt: Date;
-}
-
-export interface ITransaction {
-  _id: string;
-  orderId: string; // Razorpay order id (order_xxx)
-  paymentId: string; // Razorpay payment id (pay_xxx)
-  signature?: string;
-  buyerId: string;
-  sellerId?: string;
-  postId?: string;
-  amount: number; // in INR
-  currency: string; // 'INR'
-  status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'REFUNDED';
-  type: 'PRODUCT_PURCHASE' | 'POST_BOOST' | 'VERIFICATION_BADGE';
+  name: string;
+  slug: string;
+  iconName: string;
   description: string;
-  paymentMethod: 'UPI' | 'CARD' | 'NETBANKING' | 'WALLET' | 'COD';
-  customerPhone?: string;
-  customerAddress?: {
-    street: string;
-    city: string;
-    state: string;
-    pincode: string;
-  };
-  createdAt: Date;
+  featuredArtisansCount: number;
 }
-
-export interface IBoostCampaign {
-  _id: string;
-  postId: string;
-  creatorId: string;
-  budgetInr: number;
-  durationDays: number;
-  targetCity?: string;
-  targetPincode?: string;
-  estimatedImpressions: number;
-  impressionsDelivered: number;
-  clicks: number;
-  status: 'ACTIVE' | 'COMPLETED' | 'PAUSED';
-  createdAt: Date;
-}
-
-export interface IVerificationRequest {
-  _id: string;
-  userId: string;
-  fullName: string;
-  documentType: 'AADHAAR' | 'PAN' | 'GSTIN' | 'PASSPORT';
-  documentNumber: string;
-  documentFrontUrl: string;
-  category: 'CREATOR' | 'BUSINESS' | 'GOVERNMENT' | 'ENTERTAINMENT' | 'JOURNALIST';
-  socialLinks: string[];
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  rejectionReason?: string;
-  feePaidInr: number; // ₹499 verification fee (Meta verified model for India)
-  createdAt: Date;
-}
-

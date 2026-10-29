@@ -8,18 +8,15 @@ import { FeedProvider } from '@/context/FeedContext';
 import Sidebar from '@/components/layout/Sidebar';
 import MobileNavbar from '@/components/layout/MobileNavbar';
 import CreatePostModal from '@/components/create/CreatePostModal';
-import StoryViewerModal from '@/components/feed/StoryViewerModal';
-import RazorpayCheckoutModal from '@/components/monetization/RazorpayCheckoutModal';
-import BoostPostModal from '@/components/monetization/BoostPostModal';
-import VerificationRequestModal from '@/components/monetization/VerificationRequestModal';
+import OrderInquiryModal from '@/components/feed/OrderInquiryModal';
 import AuthModal from '@/components/auth/AuthModal';
 import ProfileSetupWizard from '@/components/auth/ProfileSetupWizard';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'BharatGram - India\'s Visual Social Network & Creator Storefront',
-  description: 'Share photos, reels, and stories with millions of creators across India. Buy & sell handlooms, art, and local services with instant UPI checkout.',
+  title: 'VyaparVibe - Empowering Local Indian Creators, Artisans & Small Businesses',
+  description: 'Showcase skills, crafts, and handmade products with direct local sales, customer inquiries, and short video showcases across India.',
 };
 
 export default function RootLayout({
@@ -29,7 +26,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} min-h-screen bg-[#FAFAFA] dark:bg-black text-neutral-900 dark:text-neutral-100 transition-colors`}>
+      <body className={`${inter.className} min-h-screen bg-light-bg dark:bg-dark-bg text-neutral-900 dark:text-neutral-100 transition-colors`}>
         <ThemeProvider>
           <ToastProvider>
             <AuthProvider>
@@ -41,18 +38,15 @@ export default function RootLayout({
                   {/* Top & Bottom Mobile Navigation Bars */}
                   <MobileNavbar />
 
-                  {/* Main Scrollable Viewport */}
+                  {/* Main Content Area */}
                   <main className="flex-1 md:ml-20 xl:ml-64 pt-14 md:pt-0 pb-16 md:pb-0 min-h-screen flex justify-center">
                     {children}
                   </main>
                 </div>
 
-                {/* Global Modals */}
+                {/* Modals & Drawers */}
                 <CreatePostModal />
-                <StoryViewerModal />
-                <RazorpayCheckoutModal />
-                <BoostPostModal />
-                <VerificationRequestModal />
+                <OrderInquiryModal />
                 <AuthModal />
                 <ProfileSetupWizard />
               </FeedProvider>
@@ -63,4 +57,3 @@ export default function RootLayout({
     </html>
   );
 }
-
